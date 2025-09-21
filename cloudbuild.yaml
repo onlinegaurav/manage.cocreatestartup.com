@@ -13,21 +13,13 @@ steps:
 
   # Step 4: Sync to GCS bucket (only changed files)
   - id: sync-to-gcs
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        gsutil -m rsync -r -c . gs://manage.cocreatestartup.com
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args: ['gsutil', '-m', 'rsync', '-r', '-c', 'build/', 'gs://manage.cocreatestartup.com']
 
-  # Step 4: Invalidate CDN cache
+  # Step 5: Invalidate CDN cache
   - id: invalidate-cdn
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        gcloud compute url-maps invalidate-cdn-cache cocreate-map --path "/index.html"
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args: ['gcloud', 'compute', 'url-maps', 'invalidate-cdn-cache', 'cocreate-map', '--path "/index.html"']
 
 timeout: "600s"
 
