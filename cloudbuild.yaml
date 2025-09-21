@@ -1,0 +1,35 @@
+steps:
+  # Step 1: Install dependencies
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['ci']
+
+  # Step 2: Run tests (TDD step)
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['test', '--', '--ci', '--watchAll=false']
+
+  # Step 3: Build app
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'build']
+
+  # Step 4: Sync to GCS bucket (only changed files)
+  - id: sync-to-gcs
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gsutil -m rsync -r -c . gs://manage.cocreatestartup.com
+
+  # Step 4: Invalidate CDN cache
+  - id: invalidate-cdn
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud compute url-maps invalidate-cdn-cache cocreate-map --path "/index.html"
+
+timeout: "600s"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
