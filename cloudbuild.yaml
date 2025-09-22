@@ -28,7 +28,7 @@ steps:
     waitFor: ["npm-test", "patch-homepage"]
 #    waitFor: ["npm-test"]
 
-  # Step 5: Sync to GCS bucket (with correct metadata)
+  # Step 5: Sync to GCS bucket (only changed files) using gsutil
   - id: sync-to-gcs
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
@@ -36,10 +36,10 @@ steps:
       - -c
       - |
         echo "Syncing build/ to bucket..."
-        gcloud storage rsync --recursive build gs://manage.cocreatestartup.com --delete-unmatched-destination-objects
+        gsutil -m rsync -r -c build/ gs://manage.cocreatestartup.com
 #        echo "Setting cache control..."
-#        gcloud storage objects update gs://manage.cocreatestartup.com/static/js/* --cache-control="no-cache" || true
-#        gcloud storage objects update gs://manage.cocreatestartup.com/static/css/* --cache-control="no-cache" || true
+#        gsutil -m setmeta -h "Cache-Control:no-cache" gs://manage.cocreatestartup.com/static/js/** || true
+#        gsutil -m setmeta -h "Cache-Control:no-cache" gs://manage.cocreatestartup.com/static/css/** || true
 
   # Step 6: Set GCS website config
   - id: set-website-config
