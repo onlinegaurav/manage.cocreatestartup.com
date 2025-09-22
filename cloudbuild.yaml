@@ -48,11 +48,26 @@ steps:
 #    waitFor: ["sync-to-gcs"]
 
   # Step 7: Invalidate CDN cache
+#  - id: invalidate-cdn
+#    name: 'gcr.io/cloud-builders/gcloud'
+#    args:
+#      ['gcloud', 'compute', 'url-maps', 'invalidate-cdn-cache', 'cocreate-map', '--path', '/*']
+#    waitFor: ["set-website-config"]
   - id: invalidate-cdn
     name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
     args:
-      ['gcloud', 'compute', 'url-maps', 'invalidate-cdn-cache', 'cocreate-map', '--path', '/*']
-#    waitFor: ["set-website-config"]
+      - -c
+      - |
+        echo "Invalidating CDN cache using Compute Engine API..."
+        ACCESS_TOKEN=$(gcloud auth print-access-token)
+        PROJECT_ID=$(gcloud config get-value project)
+        URL_MAP_NAME="cocreate-map"
+        curl -X POST \
+          -H "Authorization: Bearer $ACCESS_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d '{"path": "/*"}' \
+          "https://compute.googleapis.com/compute/v1/projects/$PROJECT_ID/global/urlMaps/$URL_MAP_NAME/invalidateCache"
     waitFor: ["sync-to-gcs"]
 
 timeout: "900s"
