@@ -42,18 +42,18 @@ steps:
 #        gsutil -m setmeta -h "Cache-Control:no-cache" gs://manage.cocreatestartup.com/static/css/** || true
 
   # Step 6: Set GCS bucket website config for SPA
-  - id: set-website-config
-    name: 'gcr.io/cloud-builders/gcloud'
-    args: [ 'gsutil', 'web', 'set', '-m', 'index.html', '-e', 'index.html', 'gs://manage.cocreatestartup.com' ]
-    waitFor: ["sync-to-gcs"]
+#  - id: set-website-config
+#    name: 'gcr.io/cloud-builders/gcloud'
+#    args: [ 'gsutil', 'web', 'set', '-m', 'index.html', '-e', 'index.html', 'gs://manage.cocreatestartup.com' ]
+#    waitFor: ["sync-to-gcs"]
 
   # Step 7: Invalidate CDN cache
   - id: invalidate-cdn
     name: 'gcr.io/cloud-builders/gcloud'
     args:
-      ['gcloud', 'compute', 'url-maps', 'invalidate-cdn-cache', 'cocreate-map', '--path', '/index.html']
-    waitFor: ["set-website-config"]
-#    waitFor: ["sync-to-gcs"]
+      ['gcloud', 'compute', 'url-maps', 'invalidate-cdn-cache', 'cocreate-map', '--path', '/*]
+#    waitFor: ["set-website-config"]
+    waitFor: ["sync-to-gcs"]
 
 timeout: "900s"
 
