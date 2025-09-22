@@ -6,10 +6,10 @@ interface AuthFormProps {
 }
 
 const providerList = [
-  { name: 'Google', id: 'google' },
-  { name: 'GitHub', id: 'github' },
-  { name: 'Microsoft', id: 'microsoft' },
-  { name: 'Apple', id: 'apple' },
+  { name: 'Google', id: 'google', icon: '/assets/icons/google.svg' },
+  { name: 'Microsoft', id: 'microsoft', icon: '/assets/icons/microsoft.svg' },
+  { name: 'Apple', id: 'apple', icon: '/assets/icons/apple.svg' },
+  { name: 'LinkedIn', id: 'linkedin', icon: '/assets/icons/linkedin.svg' },
 ];
 
 const AuthForm: React.FC<AuthFormProps> = ({ onAuth }) => {
@@ -28,7 +28,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuth }) => {
   };
 
   const handleProvider = (provider: string) => {
-    // Simulate provider login
     onAuth({ email: provider + '@provider.com', picture: undefined });
   };
 
@@ -63,6 +62,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuth }) => {
           onClick={() => handleProvider(p.id)}
           data-testid={`provider-${p.id}`}
         >
+          <img src={p.icon} alt={p.name + ' icon'} style={{ width: 20, height: 20, marginRight: 10, verticalAlign: 'middle' }} />
           {p.name}
         </button>
       ))}
@@ -72,3 +72,5 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuth }) => {
 };
 
 export default AuthForm;
+
+export {};

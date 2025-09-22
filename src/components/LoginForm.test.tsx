@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import LoginForm from './LoginForm';
+import LoginForm from './LoginForm/LoginForm';
 
 jest.mock('../services/authService', () => ({
   loginWithEmail: jest.fn(() => Promise.resolve()),
@@ -33,4 +33,3 @@ describe('LoginForm', () => {
     expect(screen.getByTestId('error-message')).toHaveTextContent('Login failed (stub)');
   });
 });
-

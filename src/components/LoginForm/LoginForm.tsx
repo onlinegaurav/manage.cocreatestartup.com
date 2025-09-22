@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { loginWithEmail } from '../services/authService';
+import { loginWithEmail } from '../../services/authService';
 
 const styles = {
   form: {
