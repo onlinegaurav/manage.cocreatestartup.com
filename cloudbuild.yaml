@@ -11,22 +11,22 @@ steps:
     waitFor: ["npm-ci"]
 
   # Step 3: Patch package.json homepage before build
-  - id: patch-homepage
-    name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - -c
-      - |
-        echo "Patching package.json homepage..."
-        sed -i 's#"homepage":.*#"homepage": "https://manage.cocreatestartup.com",#' package.json || \
-        (jq '.homepage="https://manage.cocreatestartup.com"' package.json > package.tmp.json && mv package.tmp.json package.json)
+#  - id: patch-homepage
+#    name: 'gcr.io/cloud-builders/gcloud'
+#    entrypoint: 'bash'
+#    args:
+#      - -c
+#      - |
+#        echo "Patching package.json homepage..."
+#        sed -i 's#"homepage":.*#"homepage": "https://manage.cocreatestartup.com",#' package.json || \
+#        (jq '.homepage="https://manage.cocreatestartup.com"' package.json > package.tmp.json && mv package.tmp.json package.json)
 
   # Step 4: Build app
   - id: npm-build
     name: 'gcr.io/cloud-builders/npm'
     args: ['run', 'build']
-    waitFor: ["npm-test", "patch-homepage"]
-#    waitFor: ["npm-test"]
+#    waitFor: ["npm-test", "patch-homepage"]
+    waitFor: ["npm-test"]
 
   # Step 5: Sync to GCS bucket (only changed files) using gsutil
   - id: sync-to-gcs
@@ -37,42 +37,9 @@ steps:
       - |
         echo "Syncing build/ to bucket..."
         gsutil -m rsync -r -c build/ gs://manage.cocreatestartup.com
-#        echo "Setting cache control..."
-#        gsutil -m setmeta -h "Cache-Control:no-cache" gs://manage.cocreatestartup.com/static/js/** || true
-#        gsutil -m setmeta -h "Cache-Control:no-cache" gs://manage.cocreatestartup.com/static/css/** || true
-
-  # Step 6: Set GCS bucket website config for SPA
-#  - id: set-website-config
-#    name: 'gcr.io/cloud-builders/gcloud'
-#    args: [ 'gsutil', 'web', 'set', '-m', 'index.html', '-e', 'index.html', 'gs://manage.cocreatestartup.com' ]
-#    waitFor: ["sync-to-gcs"]
-
-  # Step 6: Configure SPA fallback via curl
-#  - id: configure-spa
-#    name: 'gcr.io/cloud-builders/gcloud'
-#    entrypoint: 'bash'
-#    args:
-#      - -c
-#      - |
-#        echo "Configuring SPA fallback using GCS API..."
-#        ACCESS_TOKEN=$(gcloud auth print-access-token)
-#        curl -X PATCH \
-#          -H "Authorization: Bearer $ACCESS_TOKEN" \
-#          -H "Content-Type: application/json" \
-#          -d '{
-#                "website": {
-#                  "mainPageSuffix": "index.html",
-#                  "notFoundPage": "index.html"
-#                }
-#              }' \
-#          "https://storage.googleapis.com/storage/v1/b/manage.cocreatestartup.com"
+    waitFor: ["npm-build"]
 
   # Step 7: Invalidate CDN cache
-#  - id: invalidate-cdn
-#    name: 'gcr.io/cloud-builders/gcloud'
-#    args:
-#      ['gcloud', 'compute', 'url-maps', 'invalidate-cdn-cache', 'cocreate-map', '--path', '/*']
-#    waitFor: ["set-website-config"]
   - id: invalidate-cdn
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
