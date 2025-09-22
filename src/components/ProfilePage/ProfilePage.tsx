@@ -35,20 +35,20 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onUpdate }) => {
       <div className={styles['profile-fields']}>
         <h2 className={styles['profile-title']}>Profile</h2>
         <div className={styles['profile-field']}>
-          <label className={styles['profile-label']}>Picture URL:</label>
-          <input name="picture" value={form.picture} onChange={handleChange} className={styles['profile-input']} />
+          <label className={styles['profile-label']} htmlFor="profile-picture">Picture URL:</label>
+          <input id="profile-picture" name="picture" value={form.picture} onChange={handleChange} className={styles['profile-input']} />
         </div>
         <div className={styles['profile-field']}>
-          <label className={styles['profile-label']}>Email:</label>
-          <input name="email" value={form.email} onChange={handleChange} className={styles['profile-input']} />
+          <label className={styles['profile-label']} htmlFor="profile-email">Email:</label>
+          <input id="profile-email" name="email" value={form.email} onChange={handleChange} className={styles['profile-input']} />
         </div>
         <div className={styles['profile-field']}>
-          <label className={styles['profile-label']}>Phone:</label>
-          <input name="phone" value={form.phone} onChange={handleChange} className={styles['profile-input']} />
+          <label className={styles['profile-label']} htmlFor="profile-phone">Phone:</label>
+          <input id="profile-phone" name="phone" value={form.phone} onChange={handleChange} className={styles['profile-input']} />
         </div>
         <div className={styles['profile-field']}>
-          <label className={styles['profile-label']}>Address:</label>
-          <input name="address" value={form.address} onChange={handleChange} className={styles['profile-input']} />
+          <label className={styles['profile-label']} htmlFor="profile-address">Address:</label>
+          <input id="profile-address" name="address" value={form.address} onChange={handleChange} className={styles['profile-input']} />
         </div>
         <button type="submit" className={styles['profile-btn']}>Update Profile</button>
       </div>
