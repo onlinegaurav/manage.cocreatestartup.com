@@ -41,16 +41,10 @@ steps:
 #        gsutil -m setmeta -h "Cache-Control:no-cache" gs://manage.cocreatestartup.com/static/js/** || true
 #        gsutil -m setmeta -h "Cache-Control:no-cache" gs://manage.cocreatestartup.com/static/css/** || true
 
-  # Step 6: Set GCS website config
+  # Step 6: Set GCS bucket website config for SPA
   - id: set-website-config
     name: 'gcr.io/cloud-builders/gcloud'
-    args:
-      [
-        'gcloud', 'storage', 'buckets', 'update',
-        'gs://manage.cocreatestartup.com',
-        '--web-main-page-suffix=index.html',
-        '--web-error-page=index.html'
-      ]
+    args: [ 'gsutil', 'web', 'set', '-m', 'index.html', '-e', 'index.html', 'gs://manage.cocreatestartup.com' ]
     waitFor: ["sync-to-gcs"]
 
   # Step 7: Invalidate CDN cache
