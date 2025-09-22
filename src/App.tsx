@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthForm from './components/AuthForm/AuthForm';
 import Sidebar from './components/Sidebar/Sidebar';
 import ProfilePage from './components/ProfilePage/ProfilePage';
@@ -16,6 +16,12 @@ const defaultMenu = 'Dashboard';
 const App: React.FC = () => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [selectedMenu, setSelectedMenu] = useState<string>(defaultMenu);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => (localStorage.getItem('theme') as 'light' | 'dark') || 'light');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   if (!user) {
     return (
@@ -34,9 +40,19 @@ const App: React.FC = () => {
     <div className={styles['app-root']}>
       {/* Header Bar */}
       <header className={styles['header-bar']}>
-        <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <img src="/assets/icons/cocreatestartup-favicon.svg" alt="CoCreateStartup Logo" className={styles['header-left-logo']} />
+          <span className={styles['header-title']}>Manage CoCreateStartup</span>
         </div>
         <div className={styles['header-profile']}>
+          <button
+            type="button"
+            className={styles['theme-toggle']}
+            onClick={() => setTheme(prev => (prev === 'light' ? 'dark' : 'light'))}
+            aria-label="Toggle theme"
+          >
+            {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
+          </button>
           <span className={styles['header-profile-email']}>{user.email}</span>
           <img
             src={user.picture || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
@@ -46,7 +62,7 @@ const App: React.FC = () => {
           />
         </div>
       </header>
-      {/* Main Content Area */}
+      {/* Main Content Area: Sidebar on the left, main content on the right */}
       <div className={styles['main-content']}>
         <Sidebar user={user} onMenuSelect={setSelectedMenu} selected={selectedMenu} />
         <main className={styles['detail-wrapper']}>
