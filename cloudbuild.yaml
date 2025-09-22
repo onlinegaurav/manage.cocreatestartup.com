@@ -1,34 +1,18 @@
 steps:
-  # Step 1: Install dependencies
   - id: npm-ci
     name: 'gcr.io/cloud-builders/npm'
     args: ['ci']
 
-  # Step 2: Run tests
   - id: npm-test
     name: 'gcr.io/cloud-builders/npm'
     args: ['test', '--', '--ci', '--watchAll=false']
     waitFor: ["npm-ci"]
 
-  # Step 3: Patch package.json homepage before build
-#  - id: patch-homepage
-#    name: 'gcr.io/cloud-builders/gcloud'
-#    entrypoint: 'bash'
-#    args:
-#      - -c
-#      - |
-#        echo "Patching package.json homepage..."
-#        sed -i 's#"homepage":.*#"homepage": "https://manage.cocreatestartup.com",#' package.json || \
-#        (jq '.homepage="https://manage.cocreatestartup.com"' package.json > package.tmp.json && mv package.tmp.json package.json)
-
-  # Step 4: Build app
   - id: npm-build
     name: 'gcr.io/cloud-builders/npm'
     args: ['run', 'build']
-#    waitFor: ["npm-test", "patch-homepage"]
     waitFor: ["npm-test"]
 
-  # Step 5: Sync to GCS bucket (only changed files) using gsutil
   - id: sync-to-gcs
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
@@ -39,7 +23,6 @@ steps:
         gsutil -m rsync -r -c build/ gs://manage.cocreatestartup.com
     waitFor: ["npm-build"]
 
-  # Step 7: Invalidate CDN cache
   - id: invalidate-cdn
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
