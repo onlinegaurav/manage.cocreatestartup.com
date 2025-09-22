@@ -21,7 +21,9 @@ const App: React.FC = () => {
     return (
       <div className={styles['auth-bg']}>
         <div className={styles['auth-card']}>
-          <h1 className={styles['auth-title']}>Manage CoCreateStartup</h1>
+          <div className={styles['auth-card-header']}>
+            <img src="/assets/icons/cocreatestartup-logo.svg" alt="CoCreateStartup" className={styles['auth-card-logo']} />
+          </div>
           <AuthForm onAuth={setUser} />
         </div>
       </div>
@@ -33,7 +35,6 @@ const App: React.FC = () => {
       {/* Header Bar */}
       <header className={styles['header-bar']}>
         <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-          <img src="/assets/icons/cocreatestartup-logo.svg" alt="CoCreateStartup Logo" style={{ height: 36, marginRight: 18 }} />
         </div>
         <div className={styles['header-profile']}>
           <span className={styles['header-profile-email']}>{user.email}</span>

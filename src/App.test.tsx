@@ -5,7 +5,6 @@ import App from './App';
 describe('App', () => {
   it('renders the portal title and AuthForm', () => {
     render(<App />);
-    expect(screen.getByText('Manage CoCreateStartup')).toBeInTheDocument();
     expect(screen.getByTestId('email-input')).toBeInTheDocument();
   });
 
