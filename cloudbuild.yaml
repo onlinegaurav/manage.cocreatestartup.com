@@ -12,7 +12,7 @@ steps:
 
   # Step 3: Patch package.json homepage before build
   - id: patch-homepage
-    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - -c
@@ -30,7 +30,7 @@ steps:
 
   # Step 5: Sync to GCS bucket (with correct metadata)
   - id: sync-to-gcs
-    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - -c
@@ -42,24 +42,24 @@ steps:
 #        gcloud storage objects update gs://manage.cocreatestartup.com/static/css/* --cache-control="no-cache" || true
 
   # Step 6: Set GCS website config
-#  - id: set-website-config
-#    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#    args:
-#      [
-#        'gcloud', 'storage', 'buckets', 'update',
-#        'gs://manage.cocreatestartup.com',
-#        '--web-main-page-suffix=index.html',
-#        '--web-error-page=index.html'
-#      ]
-#    waitFor: ["sync-to-gcs"]
+  - id: set-website-config
+    name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      [
+        'gcloud', 'storage', 'buckets', 'update',
+        'gs://manage.cocreatestartup.com',
+        '--web-main-page-suffix=index.html',
+        '--web-error-page=index.html'
+      ]
+    waitFor: ["sync-to-gcs"]
 
   # Step 7: Invalidate CDN cache
   - id: invalidate-cdn
-    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    name: 'gcr.io/cloud-builders/gcloud'
     args:
       ['gcloud', 'compute', 'url-maps', 'invalidate-cdn-cache', 'cocreate-map', '--path', '/index.html']
-#    waitFor: ["set-website-config"]
-    waitFor: ["sync-to-gcs"]
+    waitFor: ["set-website-config"]
+#    waitFor: ["sync-to-gcs"]
 
 timeout: "900s"
 
