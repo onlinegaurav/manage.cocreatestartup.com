@@ -51,7 +51,7 @@ steps:
   - id: invalidate-cdn
     name: 'gcr.io/cloud-builders/gcloud'
     args:
-      ['gcloud', 'compute', 'url-maps', 'invalidate-cdn-cache', 'cocreate-map', '--path', '/*]
+      ['gcloud', 'compute', 'url-maps', 'invalidate-cdn-cache', 'cocreate-map', '--path', '/*']
 #    waitFor: ["set-website-config"]
     waitFor: ["sync-to-gcs"]
 
