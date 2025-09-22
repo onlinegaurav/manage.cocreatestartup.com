@@ -47,6 +47,26 @@ steps:
 #    args: [ 'gsutil', 'web', 'set', '-m', 'index.html', '-e', 'index.html', 'gs://manage.cocreatestartup.com' ]
 #    waitFor: ["sync-to-gcs"]
 
+  # Step 6: Configure SPA fallback via curl
+#  - id: configure-spa
+#    name: 'gcr.io/cloud-builders/gcloud'
+#    entrypoint: 'bash'
+#    args:
+#      - -c
+#      - |
+#        echo "Configuring SPA fallback using GCS API..."
+#        ACCESS_TOKEN=$(gcloud auth print-access-token)
+#        curl -X PATCH \
+#          -H "Authorization: Bearer $ACCESS_TOKEN" \
+#          -H "Content-Type: application/json" \
+#          -d '{
+#                "website": {
+#                  "mainPageSuffix": "index.html",
+#                  "notFoundPage": "index.html"
+#                }
+#              }' \
+#          "https://storage.googleapis.com/storage/v1/b/manage.cocreatestartup.com"
+
   # Step 7: Invalidate CDN cache
 #  - id: invalidate-cdn
 #    name: 'gcr.io/cloud-builders/gcloud'
@@ -60,14 +80,14 @@ steps:
       - -c
       - |
         echo "Invalidating CDN cache using Compute Engine API..."
-        ACCESS_TOKEN=$(gcloud auth print-access-token)
-        PROJECT_ID=$(gcloud config get-value project)
-        URL_MAP_NAME="cocreate-map"
+        access_token=$(gcloud auth print-access-token)
+        project_id=$(gcloud config get-value project)
+        url_map_name="cocreate-map"
         curl -X POST \
-          -H "Authorization: Bearer $ACCESS_TOKEN" \
+          -H "Authorization: Bearer $access_token" \
           -H "Content-Type: application/json" \
           -d '{"path": "/*"}' \
-          "https://compute.googleapis.com/compute/v1/projects/$PROJECT_ID/global/urlMaps/$URL_MAP_NAME/invalidateCache"
+          "https://compute.googleapis.com/compute/v1/projects/$project_id/global/urlMaps/$url_map_name/invalidateCache"
     waitFor: ["sync-to-gcs"]
 
 timeout: "900s"
