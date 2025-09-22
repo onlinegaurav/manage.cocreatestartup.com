@@ -16,19 +16,31 @@ steps:
     args: ['run', 'build']
     waitFor: ["npm-test"]
 
-  # Step 4: Sync to GCS bucket (only changed files)
+  # Step 4: Sync to GCS bucket (only changed files, with correct MIME)
   - id: sync-to-gcs
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    args: ['gsutil', '-m', 'rsync', '-r', '-c', 'build/', 'gs://manage.cocreatestartup.com']
-    waitFor: ["npm-build"]
+    entrypoint: 'bash'
+    args:
+      - -c
+      - |
+        gsutil -m rsync -r -c build/ gs://manage.cocreatestartup.com
+        # Ensure correct cache-control and MIME types
+        gsutil -m setmeta -h "Cache-Control:no-cache" gs://manage.cocreatestartup.com/static/js/** || true
+        gsutil -m setmeta -h "Cache-Control:no-cache" gs://manage.cocreatestartup.com/static/css/** || true
 
-  # Step 5: Invalidate CDN cache
-  - id: invalidate-cdn
+  # Step 5: Set GCS bucket website config (important for React routing)
+  - id: set-website-config
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    args: ['gcloud', 'compute', 'url-maps', 'invalidate-cdn-cache', 'cocreate-map', '--path', '/index.html']
+    args: ['gsutil', 'web', 'set', '-m', 'index.html', '-e', 'index.html', 'gs://manage.cocreatestartup.com']
     waitFor: ["sync-to-gcs"]
 
-timeout: "600s"
+  # Step 6: Invalidate CDN cache
+  - id: invalidate-cdn
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:  ['gcloud', 'compute', 'url-maps', 'invalidate-cdn-cache', 'cocreate-map', '--path', '/*l']
+    waitFor: ["set-website-config"]
+
+timeout: "900s"
 
 options:
   logging: CLOUD_LOGGING_ONLY
