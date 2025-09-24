@@ -42,7 +42,7 @@ const App: React.FC = () => {
       <header className={styles['header-bar']}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <img src="/assets/icons/cocreatestartup-favicon.svg" alt="CoCreateStartup Logo" className={styles['header-left-logo']} />
-          <span className={styles['header-title']}>Manage CoCreateStartup</span>
+          <span className={styles['header-title']}>Manage CoCreateStartup Test</span>
         </div>
         <div className={styles['header-profile']}>
           <button

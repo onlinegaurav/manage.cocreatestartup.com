@@ -23,22 +23,27 @@ steps:
         gsutil -m rsync -r -c build/ gs://manage.cocreatestartup.com
     waitFor: ["npm-build"]
 
-#  - id: invalidate-cdn
-#    name: 'gcr.io/cloud-builders/gcloud'
-#    entrypoint: 'bash'
-#    args:
-#      - -c
-#      - |
-#        echo "Invalidating CDN cache using Compute Engine API..."
-#        access_token=$(gcloud auth print-access-token)
-#        project_id=$(gcloud config get-value project)
-#        url_map_name="cocreate-map"
-#        curl -X POST \
-#          -H "Authorization: Bearer $access_token" \
-#          -H "Content-Type: application/json" \
-#          -d '{"path": "/*"}' \
-#          "https://compute.googleapis.com/compute/v1/projects/$project_id/global/urlMaps/$url_map_name/invalidateCache"
-#    waitFor: ["sync-to-gcs"]
+  # Step 4: Invalidate CDN cache
+  - id: invalidate-cdn
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: bash
+    secretEnv: ["cf_api_token"]
+    args:
+      - -c
+      - |
+        curl -X POST "https://api.cloudflare.com/client/v4/zones/${_CF_ZONE_ID}/purge_cache" \
+             -H "Authorization: Bearer $cf_api_token" \
+             -H "Content-Type: application/json" \
+             --data '{"files":["https://manage.cocreatestartup.com/index.html"]}'
+    waitFor: ["sync-to-gcs"]
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/${PROJECT_ID}/secrets/cloudflare_api_token/versions/latest
+      env: cf_api_token
+
+substitutions:
+  _CF_ZONE_ID: "2472ab8aa0c2961504b176875e966624"
 
 timeout: "900s"
 
