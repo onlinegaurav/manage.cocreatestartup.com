@@ -1,15 +1,18 @@
 steps:
   - id: npm-ci
     name: 'node:22-alpine'
+    entrypoint: 'npm'
     args: ['ci']
 
   - id: npm-test
     name: 'node:22-alpine'
+    entrypoint: 'npm'
     args: ['test', '--', '--ci', '--watchAll=false']
     waitFor: ["npm-ci"]
 
   - id: npm-build
     name: 'node:22-alpine'
+    entrypoint: 'npm'
     args: ['run', 'build']
     waitFor: ["npm-test"]
 
