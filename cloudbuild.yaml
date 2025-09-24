@@ -1,15 +1,15 @@
 steps:
   - id: npm-ci
-    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
+    name: 'node:22-alpine'
     args: ['ci']
 
   - id: npm-test
-    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
+    name: 'node:22-alpine'
     args: ['test', '--', '--ci', '--watchAll=false']
     waitFor: ["npm-ci"]
 
   - id: npm-build
-    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
+    name: 'node:22-alpine'
     args: ['run', 'build']
     waitFor: ["npm-test"]
 
