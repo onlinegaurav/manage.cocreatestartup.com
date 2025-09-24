@@ -80,7 +80,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onAuth }) => {
       >
         {mode === 'login' ? 'Need an account? Sign up' : 'Already have an account? Login'}
       </button>
-      <div className={styles['auth-provider-label']}>or continue with</div>
+      <div className={styles['auth-provider-label']}>or continue with providers</div>
       {providerList.map(p => (
         <button
           key={p.id}
