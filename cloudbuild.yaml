@@ -1,20 +1,20 @@
 steps:
   - id: npm-ci
-    name: 'gcr.io/cloud-builders/npm'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
     args: ['ci']
 
   - id: npm-test
-    name: 'gcr.io/cloud-builders/npm'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
     args: ['test', '--', '--ci', '--watchAll=false']
     waitFor: ["npm-ci"]
 
   - id: npm-build
-    name: 'gcr.io/cloud-builders/npm'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
     args: ['run', 'build']
     waitFor: ["npm-test"]
 
   - id: sync-to-gcs
-    name: 'gcr.io/cloud-builders/gcloud'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
     entrypoint: 'bash'
     args:
       - -c
@@ -25,7 +25,7 @@ steps:
 
   # Step 4: Invalidate CDN cache
   - id: invalidate-cdn
-    name: 'gcr.io/cloud-builders/gcloud'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
     entrypoint: bash
     secretEnv: ["cf_api_token"]
     args:
